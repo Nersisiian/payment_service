@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: payment_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: payment_app
+    depends_on:
+      - db
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: payment_db
+      SECRET_KEY: gfdmhghif38yrf9ew0jkf32
+    ports:
+      - "8000:8000"
+    command: python -u app/main.py
+
+volumes:
+  postgres_data:
